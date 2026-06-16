@@ -51,9 +51,16 @@
                 <li class="nav-item">
             <a class="nav-link text-white" href="#">
                 <i class="bi bi-box-seam"></i>
+                Quản lý bài viết
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="{{ route('admin.brands.index') }}">
+                <i class="bi bi-box-seam"></i>
                 Quản lý thương hiệu
             </a>
-        </li>        <li class="nav-item">
+        </li>
+        <li class="nav-item">
             <a class="nav-link text-white" href="#">
                 <i class="bi bi-box-seam"></i>
                 Quản lý người dùng

@@ -6,6 +6,13 @@
 <div class="container">
     <h1>Danh sách loại sản phẩm</h1>
 
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     <a href="{{ route('admin.categories.create') }}" class="btn btn-primary mb-3">
         Thêm mới
     </a>
@@ -26,16 +33,17 @@
         <tbody>
             @foreach ($list as $key => $item)
                 <tr>
-                    <td>{{ $key + 1 }}</td>
+                    <!-- <td>{{ $key + 1 }}</td> -->
+            <td>{{ $list->firstItem() + $key }}</td>
+
                     <td>{{ $item->id }}</td>
                     <td>{{ $item->catename }}</td>
                     <td>{{ $item->slug }}</td>
                     <td>
                         <img
                             src="{{ asset('images/categories/' . ($item->image ?? 'default.png')) }}"
-                            alt="{{ $item->catename }}"
-                            width="80"
-                            height="80"
+                            width="50"
+                            height="50"
                             style="object-fit: cover">
                     </td>
                     <td>
@@ -69,5 +77,6 @@
         </tbody>
 
     </table>
+    {{ $list->onEachSide(1)->links('pagination::bootstrap-5') }}
 </div>
 @endsection

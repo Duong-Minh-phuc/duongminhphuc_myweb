@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\BrandController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,3 +20,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('products', ProductController::class);
 });
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('brands', BrandController::class);
+});
+Route::delete('/products/{id}', [ProductController::class, 'destroy'])
+    ->name('admin.products.destroy');
+

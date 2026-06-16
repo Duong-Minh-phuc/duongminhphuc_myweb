@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -13,7 +12,17 @@ class BrandController extends Controller
      */
     public function index()
     {
-        //
+        $list = Brand::select(
+            'id',
+            'brandname',
+            'slug',
+            'image',
+            'status'
+        )
+            ->orderBy('id', 'ASC')
+            ->paginate(5);
+
+        return view('admin.brands.index', compact('list'));
     }
 
     /**

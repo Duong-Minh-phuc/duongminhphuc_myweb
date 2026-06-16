@@ -1,8 +1,10 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,7 +29,7 @@ class ProductController extends Controller
                 'categories.catename',
                 'brands.brandname'
             )
-            ->orderBy('products.productname', 'asc')
+            ->orderBy('products.productname', 'ASC')
             ->paginate(8);
 
         return view('admin.products.index', compact('list'));
@@ -38,7 +40,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::select('id', 'catename')->get();
+        $brands     = Brand::select('id', 'brandname')->get();
+        return view('admin.products.create', compact('categories', 'brands'));
     }
 
     /**
@@ -46,7 +50,26 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            Product::create([
+                'productname'   => $request->productname,
+                'slug'          => $request->slug,
+                'cateid'        => $request->cateid,
+                'brandid'       => $request->brandid,
+                'price'         => $request->price,
+                'pricediscount' => $request->pricediscount,
+                'description'   => $request->description,
+                'status'        => $request->status,
+            ]);
+            return redirect()
+                ->route('admin.products.index')
+                ->with('success', 'Them sản phẩm thành công');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+
     }
 
     /**
@@ -62,22 +85,67 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $product = Product::find($id);
+        $categories = Category::select('id', 'catename')->get();
+        $brands     = Brand::select('id', 'brandname')->get();
+
+        return view('admin.products.edit', compact('product', 'categories', 'brands'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            if(empty($request->cateid)) {
+                return back()
+                    ->withInput()
+                    ->with('error', 'Vui lòng chọn loại sản phẩm');
+            }
+            $product = Product::find($id);
+            if (! $product) {
+                return redirect()
+                ->route('admin.products.index')
+                ->with('error', 'Sản phẩm không tồn tại');
+            }
+
+            $product->update([
+                'productname'   => $request->productname,
+                'cateid'        => $request->cateid,
+                'brandid'       => $request->brandid,
+                'price'         => $request->price,
+                'pricediscount' => $request->pricediscount,
+                'description'   => $request->description,
+                'status'        => $request->status,
+            ]);
+
+            return redirect()
+                ->route('admin.products.index')
+                ->with('success', 'Cập nhật sản phẩm thành công');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $product = Product::find($id);
+
+        if (! $product) {
+            return redirect()->back()->with('error', 'Không tìm thấy sản phẩm');
+        }
+
+        $product->delete();
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'Xóa thành công');
     }
 }

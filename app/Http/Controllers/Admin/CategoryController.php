@@ -17,7 +17,8 @@ class CategoryController extends Controller
             ->select('id', 'catename', 'status','slug','image','status')
             ->where('status', 1)
             ->orderBy('catename')
-            ->get();
+            ->orderBy('id', 'ASC')
+            ->paginate(6);
         return view('admin.categories.index', compact('list'));
     }
 
@@ -66,6 +67,20 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $hasProducts = DB::table('products')
+            ->where('cateid', $category->id)
+            ->exists();
+
+        if ($hasProducts) {
+            return redirect()
+                ->route('admin.categories.index')
+                ->with('error', 'Không thể xóa loại sản phẩm đang có sản phẩm liên kết.');
+        }
+
+        $category->delete();
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Xóa loại sản phẩm thành công.');
     }
 }

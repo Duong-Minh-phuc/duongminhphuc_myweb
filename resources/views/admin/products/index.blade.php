@@ -9,6 +9,11 @@
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary mb-3">
         Thêm mới
     </a>
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
     <table class="table table-bordered">
 <thead>
@@ -34,13 +39,13 @@
             <td>{{ $item->productname }}</td>
             <td>{{ $item->catename }}</td>
             <td>{{ $item->brandname ?? 'Không có' }}</td>
-            <td>{{ number_format($item->price, 0, ',', '.') }} đ</td>
-            <td>{{ number_format($item->pricediscount, 0, ',', '.') }} đ</td>
+            <td>{{ number_format($item->price, 0, ',', '.') }} VNĐ</td>
+            <td>{{ number_format($item->pricediscount, 0, ',', '.') }} VNĐ</td>
 
             <td>
                 <img
                     src="{{ asset('images/products/' . ($item->image ?? 'default.png')) }}"
-                    alt="{{ $item->productname }}"
+
                     width="80"
                     height="80"
                     style="object-fit: cover">

@@ -13,12 +13,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $list = DB::table('categories')
-            ->select('id', 'catename', 'status','slug','image','status')
-            ->where('status', 1)
+        $list = Category::select('id', 'catename', 'slug', 'image', 'status')
             ->orderBy('catename')
-            ->orderBy('id', 'ASC')
+            ->orderBy('id')
             ->paginate(6);
+
         return view('admin.categories.index', compact('list'));
     }
 
@@ -27,7 +26,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.categories.create');
     }
 
     /**
@@ -35,7 +34,36 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $imageName = null;
+
+            if ($request->hasFile('image')) {
+                $request->validate([
+                    'image' => 'image|mimes:jpeg,jpg,png,gif,webp|max:2048',
+                ]);
+
+                $image     = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images/categories'), $imageName);
+            }
+
+            Category::create([
+                'catename'    => $request->catename,
+                'slug'        => $request->slug,
+                'image'       => $imageName,
+                'status'      => $request->status,
+                'sort_order'  => $request->sort_order ?? 0,
+                'description' => $request->description,
+            ]);
+
+            return redirect()
+                ->route('admin.categories.index')
+                ->with('success', 'Thêm loại sản phẩm thành công');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -51,7 +79,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view('admin.categories.edit', compact('category'));
     }
 
     /**
@@ -59,7 +87,40 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        try {
+            $imageName = $category->image;
+
+            if ($request->hasFile('image')) {
+                $request->validate([
+                    'image' => 'image|mimes:jpeg,jpg,png,gif,webp|max:2048',
+                ]);
+
+                if ($category->image && file_exists(public_path('images/categories/' . $category->image))) {
+                    unlink(public_path('images/categories/' . $category->image));
+                }
+
+                $image     = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images/categories'), $imageName);
+            }
+
+            $category->update([
+                'catename'    => $request->catename,
+                'slug'        => $request->slug,
+                'image'       => $imageName,
+                'status'      => $request->status,
+                'sort_order'  => $request->sort_order ?? 0,
+                'description' => $request->description,
+            ]);
+
+            return redirect()
+                ->route('admin.categories.index')
+                ->with('success', 'Cập nhật loại sản phẩm thành công');
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
     }
 
     /**

@@ -8,7 +8,7 @@
                 {{ session('error') }}
             </div>
         @endif
-        <form action="{{ route('admin.products.store') }}" method="POST">
+        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="row">
                 <div class="col-md-6">
@@ -58,6 +58,10 @@
                     <label class="form-label">Giá khuyến mãi</label>
                     <input type="number" name="pricediscount" class="form-control"
                         value="{{ old('pricediscount',0) }}">
+                    </div>
+                    <div class="mb-3">
+                    <label class="form-label">Ảnh sản phẩm</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
                     </div>
                     <div class="mb-3">
                     <label class="form-label d-block">Trạng thái</label>

@@ -17,7 +17,8 @@
             </a>
         </li>
         {{-- Menu expand --}}
-        <li class="nav-item">
+
+        <!-- <li class="nav-item">
             <a class="nav-link text-white"
                data-bs-toggle="collapse"
                href="#categoryMenu">
@@ -41,6 +42,13 @@
                 </ul>
 
             </div>
+        </li> -->
+
+        <li class="nav-item">
+            <a class="nav-link text-white" href="{{ route('admin.categories.index') }}">
+                <i class="bi bi-box-seam"></i>
+                Quản lý danh mục
+            </a>
         </li>
         <li class="nav-item">
             <a class="nav-link text-white" href="{{ route('admin.products.index') }}">

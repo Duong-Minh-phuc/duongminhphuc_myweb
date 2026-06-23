@@ -106,7 +106,8 @@
 
                     <input type="file"
                            name="image"
-                           class="form-control">
+                           class="form-control"
+                           accept="image/*">
                 </div>
 
                 <div class="mb-3">

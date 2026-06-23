@@ -29,7 +29,7 @@ class ProductController extends Controller
                 'categories.catename',
                 'brands.brandname'
             )
-            ->orderBy('products.productname', 'ASC')
+            ->orderBy('products.productname')
             ->paginate(8);
 
         return view('admin.products.index', compact('list'));
@@ -51,6 +51,18 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
+            $imageName = null;
+
+            if ($request->hasFile('image')) {
+                $request->validate([
+                    'image' => 'image|mimes:jpeg,jpg,png,gif,webp|max:2048',
+                ]);
+
+                $image     = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images/products'), $imageName);
+            }
+
             Product::create([
                 'productname'   => $request->productname,
                 'slug'          => $request->slug,
@@ -58,6 +70,7 @@ class ProductController extends Controller
                 'brandid'       => $request->brandid,
                 'price'         => $request->price,
                 'pricediscount' => $request->pricediscount,
+                'image'         => $imageName,
                 'description'   => $request->description,
                 'status'        => $request->status,
             ]);
@@ -111,12 +124,29 @@ class ProductController extends Controller
                 ->with('error', 'Sản phẩm không tồn tại');
             }
 
+            $imageName = $product->image;
+
+            if ($request->hasFile('image')) {
+                $request->validate([
+                    'image' => 'image|mimes:jpeg,jpg,png,gif,webp|max:2048',
+                ]);
+
+                if ($product->image && file_exists(public_path('images/products/' . $product->image))) {
+                    unlink(public_path('images/products/' . $product->image));
+                }
+
+                $image     = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images/products'), $imageName);
+            }
+
             $product->update([
                 'productname'   => $request->productname,
                 'cateid'        => $request->cateid,
                 'brandid'       => $request->brandid,
                 'price'         => $request->price,
                 'pricediscount' => $request->pricediscount,
+                'image'         => $imageName,
                 'description'   => $request->description,
                 'status'        => $request->status,
             ]);
